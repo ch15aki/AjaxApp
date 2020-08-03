@@ -6,6 +6,12 @@ function check() {
 
   // 投稿クリックのイベント時」に動作する処理
   postsA.forEach(function (post) {
+    // 2回目以降はdata-loadがnullではないもの、すなわち読み込まれたことのある投稿の場合には、処理を中断させる
+    if (post.getAttribute("data-load") != null) {
+      return null;
+    }
+    // 1度でも読み込んでいればpost.setAttribute("data-load", "true");を実行しdata-loadという要素を追加
+    post.setAttribute("data-load", "true");
     // addEventListenerメソッドを使用し、引数にclickの指定
     post.addEventListener("click", (e) => {
       // エンドポイントへのリクエスト処理
@@ -42,7 +48,12 @@ function check() {
         XHR.onerror = () => {
           alert("Request failed");
         };
+        // イベントハンドラーが実行し終わったら今回のイベントをキャンセルする記述を追記
+        e.preventDefault();
+
     });
   });
 }
-window.addEventListener("load", check);
+
+// setIntervalを使用し、check関数が1秒に1度実行されるように記述
+setInterval(check, 1000);
